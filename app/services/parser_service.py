@@ -3,10 +3,11 @@ import sqlalchemy as sa
 from app.parsers.cian import CianParser
 from app.models.rent import Rent
 from app.core.database import session_maker
+from app.parsers.base_parser import BaseParser
 
 
 class ParserService():
-    def __init__(self, parser):
+    def __init__(self, parser : BaseParser):
         self.parser = parser
 
 
@@ -15,10 +16,11 @@ class ParserService():
 
         try:
             ads_list = self.parser.parse_appartments_list(url)
-            
+            ads_parse_count = len(ads_list)
+
             if not ads_list:
                 print("Cant get ads")
-                return 
+                return None
             
             new_ads_count = 0
 
@@ -30,29 +32,30 @@ class ParserService():
                     session.add(new_ad)
                     new_ads_count += 1 
             session.commit()
-
+            print(f"Parse {ads_parse_count}, Add {new_ads_count} ads")
             return ads_list
 
         except Exception as e:
             print(f"Error: {e}")
             session.rollback()
-            return 
+            return None
         
         finally:
             session.close()
-    
 
-    def get_last_ad(self):
+    
+    @staticmethod
+    def get_last_ad():
         session = session_maker()
         try:
-            query = sa.select(Rent).order_by(sa.desc(Rent.date))
+            query = sa.select(Rent).order_by(sa.desc(Rent.data))
             ad = session.scalar(query)
-            return ad
+            return Rent.to_dict(ad)
         
         except Exception as e:
             print(f"Error: {e}")
             session.rollback()
-            return 
+            return None
         
         finally:
             session.close()

@@ -89,14 +89,15 @@ class CianParser(BaseParser):
             try:
                 ad_time = ad.find("div", attrs={"data-name": "TimeLabel"}).find("div", class_="_93444fe79c--absolute--yut0v").find("span").text
                 ad_time = ad_time.lower()
-                now = datetime.now().strftime("%d.%m.%Y")
+                now = datetime.now()
                 if "сегодня" in ad_time:
-                    ad_time = ad_time.replace("сегодня", str(now))
+                    ad_time = ad_time.replace("сегодня", now.strftime("%d.%m.%Y"))
                 elif "вчера" in ad_time:
-                    delta = timedelta(days=1) 
-                    ad_time = ad_time.replace("вчера", str(now - delta))
+                    yesterday = now - timedelta(days=1) 
+                    ad_time = ad_time.replace("вчера", yesterday.strftime("%d.%m.%Y"))
             except:
                 ad_time = "No time"
+
 
             ad_data_list.append(
                 {
@@ -108,7 +109,8 @@ class CianParser(BaseParser):
                     "rent": ad_rent,
                     "rent_description": ad_rent_description,
                     "description": ad_description,
-                    "data": ad_time
+                    "data": ad_time,
+                    "parse_date": datetime.strptime(datetime.now().strftime("%d-%m-%Y %H-%M"), "%d-%m-%Y %H-%M")
                 }
             )
         

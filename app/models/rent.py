@@ -1,5 +1,4 @@
-import sqlalchemy as sa
-from sqlalchemy import create_engine, String, Integer, Boolean, DateTime, Text, Numeric, JSON, ForeignKey, Column
+from sqlalchemy import String, Integer, DateTime, Text, Column
 from datetime import datetime, timezone
 
 from app.core.database import Base
@@ -18,6 +17,7 @@ class Rent(Base):
     rent_description = Column(Text, nullable=False)
     description = Column(Text)
     data = Column(Text, nullable=False)
+    parse_date = Column(DateTime)
 
 
     def to_dict(self):
@@ -31,6 +31,7 @@ class Rent(Base):
             "rent": self.rent,
             "rent_description": self.rent_description,
             "description": self.description,
-            "data": self.data
+            "data": self.data,
+            "parse_date": self.parse_date
         }
 

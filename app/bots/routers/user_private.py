@@ -1,6 +1,9 @@
 from aiogram import types, Router
 from aiogram.filters import CommandStart, Command
 
+from app.services.parser_service import ParserService
+from app.utils.formatter import format_ad_message
+
 
 user_private_router = Router()
 
@@ -11,8 +14,10 @@ async def start_command(message: types.Message):
 
 
 @user_private_router.message(Command('latest'))
-async def echo(message: types.Message):
-    await message.answer('latest ad')
+async def latest(message: types.Message):
+    ad = ParserService.get_last_ad()
+    text = format_ad_message(ad)
+    await message.answer(text)
 
 
 @user_private_router.message()

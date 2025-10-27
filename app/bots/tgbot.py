@@ -1,13 +1,9 @@
 import asyncio
 import os
-
-from aiogram import Bot, Dispatcher, types
-from aiogram.filters import CommandStart
-
-from dotenv import find_dotenv, load_dotenv
-load_dotenv(find_dotenv())
-
-from routers.user_private import user_private_router
+from aiogram import Bot, Dispatcher
+from aiogram.enums import ParseMode
+from aiogram.client.default import DefaultBotProperties
+from app.bots.routers.user_private import user_private_router
 
 
 ALLOWED_UPDATES = ["message, edited_message"]
@@ -16,19 +12,14 @@ ROUTERS = [user_private_router]
 
 class TGBot():
     def __init__(self, routers=ROUTERS):
-        self.bot = Bot(token=os.getenv("TOKEN"))
+        self.bot = Bot(token=os.getenv("TOKEN"), default=DefaultBotProperties(parse_mode=ParseMode.HTML))
         self.dp = Dispatcher()
         self.setup_routers(routers)
 
 
     def setup_routers(self, routers):
         self.dp.include_router(*routers)
-
-
-    def format_ad_message(self, ad):
-        # добавить создание сообщения
-        pass
-
+    
 
     async def send_ad_notification(self, ad):
         message = self.format_ad_message(ad)
